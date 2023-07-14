@@ -1,6 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <SFML/System.hpp>
+#include <iostream>
+#include <chrono>
+#include <ctime>
+
 int main()
 {
     // create the window
@@ -22,10 +26,17 @@ int main()
         {
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
+            {
+                auto end = std::chrono::system_clock::now();
+                std::time_t time = std::chrono::system_clock::to_time_t(end);
+                std::string timeStr = std::string(std::ctime(&time)));
+                ofstream saveFile(timeStr);
+                
                 window.close();
+            }
          else if ((event.type == sf::Event::MouseMoved) && (mousedown == 1))
          {
-            lines.push_back(sf::Vertex(sf::Vector2f::Vector2(sf::Mouse::getPosition(window))));
+            lines.push_back(sf::Vertex(sf::Vector2f(sf::Mouse::getPosition(window))));
          }
          else if (event.type == sf::Event::MouseButtonPressed)
          {
