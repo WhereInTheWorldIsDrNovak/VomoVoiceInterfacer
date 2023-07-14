@@ -1,45 +1,54 @@
-#include <iostream>
-#include <vector>
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
+#include <vector>
 
+int main()
+{
+    // create the window
+    sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+   std::vector <sf::Vertex> lines;
+   sf::Texture texture;
+   sf::Sprite sprite;
+   texture.create(800,600);
 
-int main(int argc, char **argv) {
-    sf::VideoMode vid = sf::VideoMode(800, 600);
-    sf::RenderWindow window(vid, L"SFML Drawing – C to clear, PageUp/PageDown to pick colors", sf::Style::Default);
-    // Set a specific frame rate, since we don't want to
-    // worry about vsync or the time between drawing iterations
-    window.setVerticalSyncEnabled(false);
-    window.setFramerateLimit(60);
-
-    gui::ProgressBar aBar(10,10,10,10,sf::Color(10,10,10), 10, vid);
-
-    MappaMap map(&window);
-
+   int mousedown = 0;
+    // run the program as long as the window is open
+   window.setFramerateLimit(30);
 
     while (window.isOpen())
     {
+        // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
-        while (window.pollEvent(event)) {
-            map.eventHandler(event);
-            switch (event.type) {
-            case sf::Event::Closed:
+        while (window.pollEvent(event))
+        {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
                 window.close();
-                break;
-                }
-        }
+         else if ((event.type == sf::Event::MouseMoved) && (mousedown == 1))
+         {
+            lines.push_back(sf::Vertex(sf::Vector2f::Vector2(sf::Mouse::getPosition(window))));
+         }
+         else if (event.type == sf::Event::MouseButtonPressed)
+         {
+            mousedown = 1;
+         }
+         else if (event.type == sf::Event::MouseButtonReleased)
+         {
+            mousedown = 0;
+            texture.update(window);
+            lines.clear();
+         }
+      }
 
-        aBar.render(window);
-        aBar.update(10,200);
+        window.clear(sf::Color::Black);
 
-        // Clear the window
-        window.clear(sf::Color(64, 64, 64));
+         window.draw(sprite);
 
-        // Draw our canvas
-        map.draw(&window);
+      window.draw(&lines[0], lines.size(), sf::LinesStrip);
 
-        // Show the window
+      sprite.setTexture(texture);
         window.display();
+
     }
+
     return 0;
 }
