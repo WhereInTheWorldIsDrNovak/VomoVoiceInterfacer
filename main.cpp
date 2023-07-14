@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
-
+#include <SFML/System.hpp>
 int main()
 {
     // create the window
