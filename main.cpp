@@ -1,22 +1,27 @@
+
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <SFML/System.hpp>
-#include <iostream>
+#include <vector>
+
+// File Libs
 #include <chrono>
 #include <ctime>
+#include <fstream>
+#include <iostream>
 
 int main()
 {
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
-   std::vector <sf::Vertex> lines;
-   sf::Texture texture;
-   sf::Sprite sprite;
-   texture.create(800,600);
+    std::vector <sf::Vertex> lines;
+    std::vector <sf::Vertex> linesSave;
+    sf::Texture texture;
+    sf::Sprite sprite;
+    texture.create(800,600);
 
-   int mousedown = 0;
+    int mousedown = 0;
     // run the program as long as the window is open
-   window.setFramerateLimit(30);
+    window.setFramerateLimit(30);
 
     while (window.isOpen())
     {
@@ -27,11 +32,28 @@ int main()
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
             {
+                // Get time
                 auto end = std::chrono::system_clock::now();
+                // Convert time to more readable
                 std::time_t time = std::chrono::system_clock::to_time_t(end);
-                std::string timeStr = std::string(std::ctime(&time)));
-                ofstream saveFile(timeStr);
-                
+                std::string timeStr = std::string(std::ctime(&time));
+                // Save File Creation + Opening
+                std::ofstream saveFile(timeStr+".csv");
+                saveFile.open(timeStr, std::ios::in);
+                // Below we loop through lines, and puts in file
+                for (int iterI = 0; iterI < linesSave.size(); iterI++)
+                {
+                    // X and Y are swapped due to coding fast, the interface has them swapped
+                    // so I swapped here to avoid having to redo this demo
+                    std::cout << linesSave[iterI].position.y << "." << linesSave[iterI].position.x << std::endl;
+                    saveFile << linesSave[iterI].position.y << "." << linesSave[iterI].position.x;
+                    saveFile << "\n";
+                }
+
+                if (saveFile.is_open())
+                {
+                    saveFile.close();
+                }
                 window.close();
             }
          else if ((event.type == sf::Event::MouseMoved) && (mousedown == 1))
@@ -46,10 +68,10 @@ int main()
          {
             mousedown = 0;
             texture.update(window);
+            linesSave.insert(linesSave.end(), lines.begin(), lines.end());
             lines.clear();
          }
       }
-
         window.clear(sf::Color::Black);
 
          window.draw(sprite);
