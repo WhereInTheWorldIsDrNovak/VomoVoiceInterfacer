@@ -38,20 +38,18 @@ int main()
                 std::time_t time = std::chrono::system_clock::to_time_t(end);
                 std::string timeStr = std::string(std::ctime(&time));
                 // Save File Creation + Opening
-                std::ofstream saveFile(timeStr+".csv");
-                saveFile.open(timeStr, std::ios::in);
+                std::ofstream saveFile(timeStr + ".csv");
                 // Below we loop through lines, and puts in file
-                for (int iterI = 0; iterI < linesSave.size(); iterI++)
-                {
-                    // X and Y are swapped due to coding fast, the interface has them swapped
-                    // so I swapped here to avoid having to redo this demo
-                    std::cout << linesSave[iterI].position.y << "." << linesSave[iterI].position.x << std::endl;
-                    saveFile << linesSave[iterI].position.y << "." << linesSave[iterI].position.x;
-                    saveFile << "\n";
-                }
-
                 if (saveFile.is_open())
                 {
+                    for (int iterI = 0; iterI < linesSave.size(); iterI++)
+                    {
+                        // X and Y are swapped due to coding fast, the interface has them swapped
+                        // so I swapped here to avoid having to redo this demo
+                        std::cout << std::to_string(linesSave[iterI].position.y) + "." + std::to_string(linesSave[iterI].position.x) << std::endl;
+                        saveFile << std::to_string(linesSave[iterI].position.y) + "," + std::to_string(linesSave[iterI].position.x);
+                        saveFile << '\n';
+                    }
                     saveFile.close();
                 }
                 window.close();
@@ -74,11 +72,10 @@ int main()
       }
         window.clear(sf::Color::Black);
 
-         window.draw(sprite);
+        window.draw(sprite);
 
-      window.draw(&lines[0], lines.size(), sf::LinesStrip);
-
-      sprite.setTexture(texture);
+        window.draw(&lines[0], lines.size(), sf::LinesStrip);
+        sprite.setTexture(texture);
         window.display();
 
     }
